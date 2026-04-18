@@ -155,19 +155,25 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
       
       // Handle 202 - stats being computed
       if (response.status === 202) {
-        // Wait and retry once
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
+        console.log('[ContributorStats] GitHub is computing stats (202), will retry in 5 seconds...');
+        // Wait longer and retry once
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
         if (!isMountedRef.current) return null;
-        
+
+        console.log('[ContributorStats] Retrying after 202...');
         const retryResponse = await fetch(
           `/api/github-stats?repo=${encodeURIComponent(githubUrl)}`,
           { signal: abortControllerRef.current.signal }
         );
-        
-        if (!retryResponse.ok) return null;
-        
+
+        if (!retryResponse.ok) {
+          console.log(`[ContributorStats] Retry failed with status: ${retryResponse.status}`);
+          return null;
+        }
+
         const retryData: GitHubStatsResponse = await retryResponse.json();
+        console.log('[ContributorStats] Retry successful!', retryData.success ? 'Got data' : 'No data');
         return retryData.success ? retryData.contributors ?? null : null;
       }
 
