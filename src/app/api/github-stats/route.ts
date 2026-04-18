@@ -34,14 +34,15 @@ export interface ContributorStats {
   avatarUrl: string;
   profileUrl: string;
   totalCommits: number;
-  additions: number;
-  deletions: number;
+  additions: number | null;
+  deletions: number | null;
   percentageOfTop: number;
 }
 
 export interface GitHubStatsResponse {
   success: boolean;
   contributors?: ContributorStats[];
+  hasLineStats?: boolean;
   error?: string;
 }
 
@@ -247,10 +248,48 @@ function mapContributorSummaries(data: GitHubContributorSummary[]): ContributorS
       avatarUrl: contributor.avatar_url,
       profileUrl: contributor.html_url,
       totalCommits: contributor.contributions,
-      additions: 0,
-      deletions: 0,
+      additions: null,
+      deletions: null,
       percentageOfTop: 0,
     }))
+  );
+}
+
+function mergeContributorStats(
+  baseContributors: ContributorStats[],
+  statsContributors: ContributorStats[]
+): ContributorStats[] {
+  const statsById = new Map(statsContributors.map((contributor) => [contributor.id, contributor]));
+
+  return withPercentages(
+    baseContributors.map((contributor) => {
+      const statsContributor = statsById.get(contributor.id);
+
+      if (!statsContributor) {
+        return contributor;
+      }
+
+      return {
+        ...contributor,
+        additions: statsContributor.additions,
+        deletions: statsContributor.deletions,
+      };
+    })
+  );
+}
+
+function createSuccessResponse(
+  contributors: ContributorStats[],
+  hasLineStats: boolean
+) {
+  return NextResponse.json(
+    { success: true, contributors, hasLineStats } satisfies GitHubStatsResponse,
+    {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    }
   );
 }
 
@@ -280,70 +319,13 @@ export async function GET(request: NextRequest) {
   console.log(`[GitHub API] Fetching contributor stats for ${owner}/${repo}`);
 
   try {
-    const response = await fetchWithRetry(statsUrl, 2, 1000);
-    console.log(`[GitHub API] Response status: ${response.status} for ${owner}/${repo}`);
+    const contributorsResponse = await fetchWithRetry(contributorsUrl, 3, 500);
+    console.log(
+      `[GitHub API] Contributors response status: ${contributorsResponse.status} for ${owner}/${repo}`
+    );
 
-    if (response.status === 202) {
-      console.log(`[GitHub API] Falling back to /contributors for ${owner}/${repo}`);
-
-      const fallbackResponse = await fetchWithRetry(contributorsUrl, 3, 1000);
-      console.log(
-        `[GitHub API] Fallback response status: ${fallbackResponse.status} for ${owner}/${repo}`
-      );
-
-      if (fallbackResponse.status === 403) {
-        const remaining = fallbackResponse.headers.get("x-ratelimit-remaining");
-        if (remaining === "0") {
-          return NextResponse.json(
-            { success: false, error: "GitHub API rate limit exceeded. Please try again later." } as GitHubStatsResponse,
-            { status: 429 }
-          );
-        }
-
-        return NextResponse.json(
-          { success: false, error: "Access denied to repository" } as GitHubStatsResponse,
-          { status: 403 }
-        );
-      }
-
-      if (fallbackResponse.status === 404) {
-        return NextResponse.json(
-          { success: false, error: "Repository not found" } as GitHubStatsResponse,
-          { status: 404 }
-        );
-      }
-
-      if (!fallbackResponse.ok) {
-        return NextResponse.json(
-          { success: false, error: "Failed to fetch repository contributors" } as GitHubStatsResponse,
-          { status: fallbackResponse.status }
-        );
-      }
-
-      const fallbackData: GitHubContributorSummary[] = await fallbackResponse.json();
-
-      if (!Array.isArray(fallbackData)) {
-        return NextResponse.json(
-          { success: true, contributors: [] } as GitHubStatsResponse,
-          { status: 200 }
-        );
-      }
-
-      const contributors = mapContributorSummaries(fallbackData);
-
-      return NextResponse.json(
-        { success: true, contributors } as GitHubStatsResponse,
-        {
-          status: 200,
-          headers: {
-            "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
-          },
-        }
-      );
-    }
-
-    if (response.status === 403) {
-      const remaining = response.headers.get("x-ratelimit-remaining");
+    if (contributorsResponse.status === 403) {
+      const remaining = contributorsResponse.headers.get("x-ratelimit-remaining");
       if (remaining === "0") {
         return NextResponse.json(
           { success: false, error: "GitHub API rate limit exceeded. Please try again later." } as GitHubStatsResponse,
@@ -356,47 +338,59 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (response.status === 404) {
+    if (contributorsResponse.status === 404) {
       return NextResponse.json(
         { success: false, error: "Repository not found" } as GitHubStatsResponse,
         { status: 404 }
       );
     }
 
-    if (!response.ok) {
+    if (!contributorsResponse.ok) {
       return NextResponse.json(
-        { success: false, error: "Failed to fetch repository stats" } as GitHubStatsResponse,
-        { status: response.status }
+        { success: false, error: "Failed to fetch repository contributors" } as GitHubStatsResponse,
+        { status: contributorsResponse.status }
       );
     }
 
-    const data: GitHubContributor[] = await response.json();
+    const contributorsData: GitHubContributorSummary[] = await contributorsResponse.json();
 
-    if (!Array.isArray(data)) {
-      return NextResponse.json(
-        { success: true, contributors: [] } as GitHubStatsResponse,
-        { status: 200 }
-      );
+    if (!Array.isArray(contributorsData)) {
+      return createSuccessResponse([], false);
     }
 
-    const contributors = mapStatsContributors(data);
+    const fallbackContributors = mapContributorSummaries(contributorsData);
 
-    if (contributors.length === 0) {
-      return NextResponse.json(
-        { success: true, contributors: [] } as GitHubStatsResponse,
-        { status: 200 }
-      );
+    if (fallbackContributors.length === 0) {
+      return createSuccessResponse([], false);
     }
 
-    return NextResponse.json(
-      { success: true, contributors } as GitHubStatsResponse,
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
-        },
+    let contributors = fallbackContributors;
+    let hasLineStats = false;
+
+    try {
+      const statsResponse = await fetchWithRetry(statsUrl, 2, 500);
+      console.log(`[GitHub API] Stats response status: ${statsResponse.status} for ${owner}/${repo}`);
+
+      if (statsResponse.ok) {
+        const statsData: GitHubContributor[] = await statsResponse.json();
+
+        if (Array.isArray(statsData)) {
+          const statsContributors = mapStatsContributors(statsData);
+
+          if (statsContributors.length > 0) {
+            contributors = mergeContributorStats(fallbackContributors, statsContributors);
+            hasLineStats = contributors.some(
+              (contributor) => contributor.additions !== null && contributor.deletions !== null
+            );
+          }
+        }
       }
-    );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      console.warn(`[GitHub API] Stats enrichment failed for ${owner}/${repo}: ${message}`);
+    }
+
+    return createSuccessResponse(contributors, hasLineStats);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error(`GitHub API error for ${owner}/${repo}:`, message);

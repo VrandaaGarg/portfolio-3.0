@@ -14,13 +14,15 @@ interface ContributorStatsProps {
 
 interface CachedData {
   contributors: ContributorStatsType[];
+  hasLineStats: boolean;
   timestamp: number;
 }
 
 type CacheStore = Record<string, CachedData>;
 
-const CACHE_KEY = "contributor_stats_cache_v2";
-const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_KEY = "contributor_stats_cache_v3";
+const FULL_CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000;
+const PARTIAL_CACHE_EXPIRY_MS = 30 * 60 * 1000;
 const MAX_CACHED_REPOS = 20; // Limit cache size
 
 // Validate cached data structure
@@ -29,6 +31,7 @@ function isValidCachedData(data: unknown): data is CachedData {
   const obj = data as Record<string, unknown>;
   
   if (typeof obj.timestamp !== "number") return false;
+  if (typeof obj.hasLineStats !== "boolean") return false;
   if (!Array.isArray(obj.contributors)) return false;
   
   // Validate first contributor structure if exists
@@ -75,19 +78,35 @@ function getCache(): CacheStore {
   }
 }
 
-function getCachedData(repoUrl: string): { contributors: ContributorStatsType[] | null; isExpired: boolean } {
+function getCacheExpiry(hasLineStats: boolean): number {
+  return hasLineStats ? FULL_CACHE_EXPIRY_MS : PARTIAL_CACHE_EXPIRY_MS;
+}
+
+function getCachedData(repoUrl: string): {
+  contributors: ContributorStatsType[] | null;
+  hasLineStats: boolean;
+  isExpired: boolean;
+} {
   const cache = getCache();
   const data = cache[repoUrl];
   
   if (data?.contributors && data.contributors.length > 0) {
-    const isExpired = Date.now() - data.timestamp > CACHE_EXPIRY_MS;
-    return { contributors: data.contributors, isExpired };
+    const isExpired = Date.now() - data.timestamp > getCacheExpiry(data.hasLineStats);
+    return {
+      contributors: data.contributors,
+      hasLineStats: data.hasLineStats,
+      isExpired,
+    };
   }
   
-  return { contributors: null, isExpired: true };
+  return { contributors: null, hasLineStats: false, isExpired: true };
 }
 
-function setCachedData(repoUrl: string, contributors: ContributorStatsType[]): void {
+function setCachedData(
+  repoUrl: string,
+  contributors: ContributorStatsType[],
+  hasLineStats: boolean
+): void {
   if (typeof window === "undefined") return;
   
   try {
@@ -96,7 +115,7 @@ function setCachedData(repoUrl: string, contributors: ContributorStatsType[]): v
     // Remove expired entries and implement LRU eviction
     const now = Date.now();
     const entries = Object.entries(cache)
-      .filter(([, data]) => now - data.timestamp <= CACHE_EXPIRY_MS)
+      .filter(([, data]) => now - data.timestamp <= getCacheExpiry(data.hasLineStats))
       .sort((a, b) => b[1].timestamp - a[1].timestamp);
     
     // Keep only MAX_CACHED_REPOS - 1 to make room for new entry
@@ -109,6 +128,7 @@ function setCachedData(repoUrl: string, contributors: ContributorStatsType[]): v
     // Add new entry
     trimmedCache[repoUrl] = {
       contributors,
+      hasLineStats,
       timestamp: now,
     };
     
@@ -118,7 +138,7 @@ function setCachedData(repoUrl: string, contributors: ContributorStatsType[]): v
     try {
       localStorage.removeItem(CACHE_KEY);
       const newCache: CacheStore = {
-        [repoUrl]: { contributors, timestamp: Date.now() },
+        [repoUrl]: { contributors, hasLineStats, timestamp: Date.now() },
       };
       localStorage.setItem(CACHE_KEY, JSON.stringify(newCache));
     } catch {
@@ -129,6 +149,7 @@ function setCachedData(repoUrl: string, contributors: ContributorStatsType[]): v
 
 export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
   const [contributors, setContributors] = useState<ContributorStatsType[]>([]);
+  const [hasLineStats, setHasLineStats] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -139,7 +160,7 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
 
   const fetchFromAPI = useCallback(async (
     isBackgroundSync: boolean = false
-  ): Promise<ContributorStatsType[] | null> => {
+  ): Promise<{ contributors: ContributorStatsType[]; hasLineStats: boolean } | null> => {
     // Cancel any pending request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -152,30 +173,6 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
         `/api/github-stats?repo=${encodeURIComponent(githubUrl)}`,
         { signal: abortControllerRef.current.signal }
       );
-      
-      // Handle 202 - stats being computed
-      if (response.status === 202) {
-        console.log('[ContributorStats] GitHub is computing stats (202), will retry in 5 seconds...');
-        // Wait longer and retry once
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
-        if (!isMountedRef.current) return null;
-
-        console.log('[ContributorStats] Retrying after 202...');
-        const retryResponse = await fetch(
-          `/api/github-stats?repo=${encodeURIComponent(githubUrl)}`,
-          { signal: abortControllerRef.current.signal }
-        );
-
-        if (!retryResponse.ok) {
-          console.log(`[ContributorStats] Retry failed with status: ${retryResponse.status}`);
-          return null;
-        }
-
-        const retryData: GitHubStatsResponse = await retryResponse.json();
-        console.log('[ContributorStats] Retry successful!', retryData.success ? 'Got data' : 'No data');
-        return retryData.success ? retryData.contributors ?? null : null;
-      }
 
       if (!response.ok) {
         if (!isBackgroundSync && isMountedRef.current) {
@@ -194,7 +191,10 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
         return null;
       }
 
-      return data.contributors;
+      return {
+        contributors: data.contributors,
+        hasLineStats: data.hasLineStats === true,
+      };
     } catch (err) {
       // Ignore abort errors
       if (err instanceof Error && err.name === "AbortError") {
@@ -214,12 +214,17 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
     
     async function loadData() {
       // Check cache first
-      const { contributors: cachedContributors, isExpired } = getCachedData(githubUrl);
+      const {
+        contributors: cachedContributors,
+        hasLineStats: cachedHasLineStats,
+        isExpired,
+      } = getCachedData(githubUrl);
       
       if (cachedContributors && cachedContributors.length > 0) {
         // Show cached data instantly
         if (isMountedRef.current) {
           setContributors(cachedContributors);
+          setHasLineStats(cachedHasLineStats);
           setLoading(false);
         }
         
@@ -233,14 +238,18 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
           
           setIsSyncing(false);
           
-          if (freshData && freshData.length > 0) {
+          if (freshData && freshData.contributors.length > 0) {
             // Compare and update if different
-            const hasChanged = JSON.stringify(freshData) !== JSON.stringify(cachedContributors);
+            const hasChanged =
+              JSON.stringify(freshData.contributors) !== JSON.stringify(cachedContributors) ||
+              freshData.hasLineStats !== cachedHasLineStats;
+
             if (hasChanged) {
-              setContributors(freshData);
+              setContributors(freshData.contributors);
+              setHasLineStats(freshData.hasLineStats);
             }
-            // Always update cache to refresh timestamp
-            setCachedData(githubUrl, freshData);
+
+            setCachedData(githubUrl, freshData.contributors, freshData.hasLineStats);
           }
         }
       } else {
@@ -253,9 +262,10 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
         
         setLoading(false);
         
-        if (freshData && freshData.length > 0) {
-          setContributors(freshData);
-          setCachedData(githubUrl, freshData);
+        if (freshData && freshData.contributors.length > 0) {
+          setContributors(freshData.contributors);
+          setHasLineStats(freshData.hasLineStats);
+          setCachedData(githubUrl, freshData.contributors, freshData.hasLineStats);
         }
       }
     }
@@ -314,7 +324,7 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
           Contributors
         </h3>
         <div className="flex items-center gap-2 p-4 rounded-xl bg-red-50 border border-red-200">
-          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
           <span className="text-sm text-red-600">{error}</span>
         </div>
       </div>
@@ -360,7 +370,7 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
               >
                 <div className="p-4">
                   <div className="flex items-start gap-3 mb-3">
-                    <div className="relative w-11 h-11 rounded-xl overflow-hidden border-2 border-neutral-200 flex-shrink-0 group-hover:border-neutral-400 transition-colors">
+                    <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl border-2 border-neutral-200 transition-colors group-hover:border-neutral-400">
                       <Image
                         src={contributor.avatarUrl}
                         alt={contributor.login}
@@ -376,7 +386,7 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
                         </span>
                       </div>
                       <div className="flex items-center gap-1 text-xs text-neutral-600 mt-0.5">
-                        <GitCommit className="w-3 h-3 flex-shrink-0" />
+                        <GitCommit className="h-3 w-3 shrink-0" />
                         <span className="font-medium">{contributor.totalCommits.toLocaleString()}</span>
                         <span>commits</span>
                       </div>
@@ -389,7 +399,7 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
                         initial={{ width: 0 }}
                         animate={{ width: `${contributor.percentageOfTop}%` }}
                         transition={{ duration: 0.8, delay: index * 0.1 + 0.3, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-neutral-400 to-neutral-600 rounded-full"
+                        className="h-full rounded-full bg-linear-to-r from-neutral-400 to-neutral-600"
                       />
                     </div>
                     <p className="text-[10px] text-neutral-500 mt-1">
@@ -397,20 +407,24 @@ export default function ContributorStats({ githubUrl }: ContributorStatsProps) {
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <div className="flex items-center gap-0.5">
-                      <Plus className="w-3 h-3 text-emerald-500" />
-                      <span className="text-emerald-600 font-medium">
-                        {contributor.additions.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <Minus className="w-3 h-3 text-red-500" />
-                      <span className="text-red-600 font-medium">
-                        {contributor.deletions.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
+                  {hasLineStats &&
+                    contributor.additions !== null &&
+                    contributor.deletions !== null && (
+                      <div className="flex items-center gap-3 text-[11px]">
+                        <div className="flex items-center gap-0.5">
+                          <Plus className="h-3 w-3 text-emerald-500" />
+                          <span className="font-medium text-emerald-600">
+                            {contributor.additions.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          <Minus className="h-3 w-3 text-red-500" />
+                          <span className="font-medium text-red-600">
+                            {contributor.deletions.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                 </div>
               </SpotlightCard>
             </Link>
