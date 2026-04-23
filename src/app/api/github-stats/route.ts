@@ -110,7 +110,7 @@ async function fetchWithRetry(
 
   if (process.env.GITHUB_TOKEN) {
     headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
-    console.log(`[GitHub API] Using token: ${process.env.GITHUB_TOKEN.substring(0, 10)}...`);
+    console.log("[GitHub API] Using authenticated requests");
   } else {
     console.warn('[GitHub API] No GITHUB_TOKEN found - using unauthenticated requests (rate limit: 60/hour)');
   }
