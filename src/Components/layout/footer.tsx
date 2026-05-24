@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 export default function Footer() {
   const currentYear = new Date().getFullYear();
   const [time, setTime] = useState<string>("");
+  const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "";
 
   useEffect(() => {
     const updateTime = () => {
@@ -38,7 +39,7 @@ export default function Footer() {
                 Got an idea?
               </span>
               <Link
-                href="mailto:gargvranda963@gmail.com"
+                href={`mailto:${email}`}
                 className="text-3xl md:text-5xl font-bold tracking-tighter hover:text-neutral-600 transition-colors"
               >
                 Let&apos;s build it.

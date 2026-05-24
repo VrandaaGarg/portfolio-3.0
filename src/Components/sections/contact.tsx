@@ -33,7 +33,7 @@ export default function Contact() {
     const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
     const [view, setView] = useState<"technical" | "non-technical">("technical");
     const [activeFile, setActiveFile] = useState<"contact.tsx" | "socialLinks.tsx">("contact.tsx");
-    const email = "gargvranda963@gmail.com";
+    const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "";
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
