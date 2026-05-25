@@ -1,16 +1,16 @@
 
-import type { IconType } from "react-icons";
-import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import SpotlightCard from "@/Components/ui/SpotlightCard";
+import type { SkillIcon } from "@/data/skills";
 
 interface SkillCardProps {
   name: string;
-  icon?: IconType | LucideIcon;
+  icon?: SkillIcon;
   image?: string;
   className?: string;
   showIcon?: boolean;
+  grayscale?: boolean;
 }
 
 export default function SkillCard({
@@ -19,6 +19,7 @@ export default function SkillCard({
   image,
   className = "",
   showIcon = true,
+  grayscale = false,
 }: SkillCardProps) {
   return (
     <SpotlightCard
@@ -44,7 +45,12 @@ export default function SkillCard({
                 className="md:w-12 md:h-12 w-5 h-5 object-contain filter grayscale"
               />
             ) : Icon ? (
-              <Icon className="md:w-8 md:h-8 w-5 h-5" />
+              <Icon
+                className={cn(
+                  "md:w-8 md:h-8 w-5 h-5",
+                  grayscale && "filter grayscale"
+                )}
+              />
             ) : null}
           </div>
         )}

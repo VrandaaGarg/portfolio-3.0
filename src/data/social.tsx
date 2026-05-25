@@ -1,7 +1,7 @@
-import { RiTwitterXLine } from "react-icons/ri";
+import { RiTwitterXLine, RiMailLine } from "react-icons/ri";
 import { IconBrandLinkedin, IconBrandGithub } from "@tabler/icons-react";
-import { SiPeerlist } from "react-icons/si";
-import { FaInstagram } from "react-icons/fa";
+// import { SiPeerlist } from "react-icons/si";
+// import { FaInstagram } from "react-icons/fa";
 import type { IconType } from "react-icons";
 
 export interface SocialLink {
@@ -27,10 +27,15 @@ export const socialLinks: SocialLink[] = [
     href: "https://github.com/VrandaaGarg",
   },
   {
-    title: "Peerlist",
-    icon: SiPeerlist,
-    href: "https://peerlist.io/vrandagarg",
+    title: "Email",
+    icon: RiMailLine,
+    href: "mailto:hi@vrandagarg.in",
   },
+  // {
+  //   title: "Peerlist",
+  //   icon: SiPeerlist,
+  //   href: "https://peerlist.io/vrandagarg",
+  // },
   // {
   //   title: "Instagram",
   //   icon: FaInstagram,

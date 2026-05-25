@@ -19,10 +19,80 @@ export interface Project {
   contributors: Contributor[];
   videoLinks?: string[];
   whyBuildIt?: string;
+  whyBuildItTitle?: string;
 }
 
 export const projectsData: Project[] = [
-  
+  {
+    id: "12",
+    name: "MemContext",
+    video:
+      "https://res.cloudinary.com/dyetf2h9n/video/upload/v1779697675/video-output-933BEE3F-04E3-480D-951A-04B3C9860639-2_prgze4.mp4",
+    image:
+      "https://res.cloudinary.com/dyetf2h9n/image/upload/v1779696984/WhatsApp_Image_2026-05-25_at_13.45.41_p11nd5.jpg",
+    description:
+      "MemContext closes the biggest gap in AI-assisted development: **agents forget**. Preferences, project context, and prior decisions vanish between sessions across Claude, Cursor, ChatGPT, and every other tool.\n\nIt's a **persistent memory layer** for MCP-compatible clients. Drop in an API key, add the MCP config, and your assistant starts **remembering across sessions, tools, and projects**.\n\n• **Hybrid Retrieval** - **Vector embeddings + PostgreSQL full-text search** so both semantic queries and exact keywords surface the right memory\n• **Evolving Memory** - **Temporal facts auto-expire** and ranking adapts to feedback, so current truth always wins over stale context\n• **Project-Scoped** - Memories isolated per project so unrelated work never bleeds into the wrong session\n• **Cross-Tool Sync** - Works with **Claude, Cursor, OpenCode, Codex CLI, Windsurf, ChatGPT, Gemini**, and every MCP-compatible client\n• **Turborepo Monorepo** - **Hono API, MCP server, Next.js dashboard, docs, and marketing site** all in one workspace",
+    whyBuildItTitle: "What I Built in This",
+    whyBuildIt:
+      "I built the **entire frontend and UI/UX** for MemContext, both the **marketing site** and the **product dashboard**.\n\n• **Interactive SVG-based isometric hero** showing AI tools syncing memory in real-time\n• **Custom illustrations and product visualizations** for each feature, hand-crafted in SVG\n• **Animated micro-interactions** powered by Framer Motion for hover, scroll, and state transitions\n• **Data-driven dashboard UI** with custom charts, stat cards, and live data tables\n• **Cohesive dark + orange design system** with consistent typography, spacing, and corner-bracket framing across every screen",
+    techStack: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Recharts",
+      "Lucide Icons",
+      "Hono",
+      "Drizzle",
+      "Neon",
+      "PostgreSQL",
+      "MCP",
+      "Turborepo",
+      "Upstash Redis",
+      "OpenRouter",
+      "Vercel AI SDK",
+    ],
+    liveDemoUrl: "https://memcontext.in/",
+    githubUrl: "https://github.com/cyberboyAyush/memcontext",
+    dateCreated: "March 2026",
+    timeCreatedIn: "2 months",
+    isLive: true,
+    featured: true,
+    contributors: [
+      { name: "Ayush Sharma", githubUrl: "https://github.com/cyberboyayush" },
+      { name: "Vranda Garg", githubUrl: "https://github.com/VrandaaGarg" },
+    ],
+  },
+  {
+    id: "11",
+    name: "MUJ General",
+    image:
+      "https://res.cloudinary.com/dyetf2h9n/image/upload/v1775342146/Untitled_design_18_tvyrou.png",
+    description:
+      "Institutional **Research Repository and Journal Publication Platform** for **Manipal University Jaipur**, built as a full publishing pipeline with submissions, peer review, moderation, and a public archive.\n\n• **Role-Based Access Control** - Three-tier roles (**reader, editor, admin**) with server-side enforcement via **Better Auth** sessions\n• **Editor Access Workflow** - Verified readers can request editor access; admins approve or reject with review metadata and promote users on approval\n• **Versioned Research Items** - Every submission tracked with **full revision history** and reviewable diffs across versions\n• **Multi-Stage Publication Pipeline** - Submission, peer review with recommendations, moderation decisions, and final publication\n• **Journals as Publication Layer** - Journals, volumes, and issues sit on top of research items, supporting both **online-first** and **issue-assigned** publication models\n• **Editorial Board Management** - Per-journal editorial boards with role assignments and admin-managed membership\n• **S3-Compatible File Storage** - PDFs and assets stored in **Cloudflare R2** via the standard S3 API for provider portability\n• **Saved Research** - Client-only bookmarking via **Zustand store** persisted to localStorage, hydrated client-side to avoid SSR mismatch\n• **Email Verification + Credentials Auth** - **Better Auth** email/password flow gated by verification before role elevation\n• **Activity Logs and Moderation History** - Full audit trail for moderation decisions, submissions, and admin actions",
+    techStack: [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Drizzle",
+      "Neon",
+      "Better Auth",
+      "Cloudflare R2",
+    ],
+    liveDemoUrl: "https://muj-general.aysh.me/",
+    githubUrl: "https://github.com/VrandaaGarg/muj-general",
+    dateCreated: "February 2026",
+    timeCreatedIn: "4 days",
+    isLive: true,
+    featured: true,
+    contributors: [
+      { name: "Ayush Sharma", githubUrl: "https://github.com/cyberboyayush" },
+      { name: "Vranda Garg", githubUrl: "https://github.com/VrandaaGarg" },
+    ],
+  },
   {
     id: "10",
     name: "CappyChat",
@@ -72,7 +142,7 @@ export const projectsData: Project[] = [
     dateCreated: "January 2026",
     timeCreatedIn: "1 week",
     isLive: true,
-    featured: true,
+    featured: false,
     contributors: [
       { name: "Vranda Garg", githubUrl: "https://github.com/VrandaaGarg" },
     ],
@@ -111,7 +181,7 @@ export const projectsData: Project[] = [
     description:
       "A beautiful, animated implementation of the classic strategy board game **Quoridor**, built with Next.js and real-time multiplayer capabilities.\n\n• **Local Pass & Play** - Two-player mode on a **single device**\n• **Online Multiplayer** - Real-time matches with friends via **shareable room codes**\n• **Real-Time Synchronization** - Serverless-friendly approach using **HTTP + SSE (Server-Sent Events)** with **Redis** as single source of truth",
     whyBuildIt:
-      "The goal was to understand **how real-time systems work under the hood** without requiring user sign-ups. I explored how to synchronize game state instantly between two players, researching various real-time communication patterns: **Short Polling**, **Long Polling**, **WebSockets / Socket.io**, and **Server-Sent Events (SSE)**.\n\n**Implementation Details:**\nFor this project, I implemented a **Serverless-friendly approach using HTTP + SSE (Server-Sent Events)**.\n• **Redis** acts as the single source of truth for game state\n• **SSE** pushes updates instantly to clients without them needing to refresh or poll\n• The system is completely stateless and frictionless—users can jump in via a link and play immediately",
+      "The goal was to understand **how real-time systems work under the hood** without requiring user sign-ups. I explored how to synchronize game state instantly between two players, researching various real-time communication patterns: **Short Polling**, **Long Polling**, **WebSockets / Socket.io**, and **Server-Sent Events (SSE)**.\n\n**Implementation Details:**\nFor this project, I implemented a **Serverless-friendly approach using HTTP + SSE (Server-Sent Events)**.\n• **Redis** acts as the single source of truth for game state\n• **SSE** pushes updates instantly to clients without them needing to refresh or poll\n• The system is completely stateless and frictionless, users can jump in via a link and play immediately",
     techStack: [
       "Next.js 15",
       "TypeScript",
@@ -214,35 +284,6 @@ export const projectsData: Project[] = [
     isLive: true,
     contributors: [
       { name: "Vranda Garg", githubUrl: "https://github.com/VrandaaGarg" },
-    ],
-    featured: false,
-  },
-  {
-    id: "3",
-    name: "Arcadia",
-    image:
-      "https://res.cloudinary.com/dyetf2h9n/image/upload/q_60/v1752582425/arcadia_cq0ncn.png",
-    description:
-      "Full-stack gaming platform featuring **10 classic games** with **competitive leaderboards** and authentication.\n\n• **10 Games** - Chess, 2048, Memory Card, Minesweeper, Pacman, Rock Paper Scissors, Snake, Sudoku, Tic-Tac-Toe\n• **Leaderboards** - Competitive rankings for **each game**\n• **Authentication** - **Login, signup, forgot and reset password**\n• **User Profiles** - Pages with **game statistics**\n• **Score Tracking** - Persistent storage in **MongoDB**\n• **Smooth Animations** - **Framer Motion** transitions\n• **Email Notifications** - Password recovery via **Nodemailer**\n• **Context API** - State management for **sessions and data**\n• **Responsive Design** - Optimized across **all devices**\n• **MERN Stack** - **React** frontend and **Node.js/Express** backend",
-    techStack: [
-      "React",
-      "JavaScript",
-      "Tailwind CSS",
-      "Framer Motion",
-      "Node.js",
-      "Express.js",
-      "MongoDB",
-      "Nodemailer",
-      "Context API",
-    ],
-    liveDemoUrl: "https://arcadia.vrandagarg.me/",
-    githubUrl: "https://github.com/VrandaaGarg/Arcadia",
-    dateCreated: "September 2024",
-    timeCreatedIn: "3 weeks",
-    isLive: true,
-    contributors: [
-      { name: "Vranda Garg", githubUrl: "https://github.com/VrandaaGarg" },
-      { name: "Ayush Sharma", githubUrl: "https://github.com/cyberboyayush" },
     ],
     featured: false,
   },

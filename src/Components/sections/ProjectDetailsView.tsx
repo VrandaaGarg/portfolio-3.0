@@ -240,7 +240,7 @@ export default function ProjectDetailsView({
                     <motion.div variants={fadeInUp}>
                       <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
                         <Lightbulb className="w-5 h-5 text-neutral-500" />
-                        Why I Built It?
+                        {project.whyBuildItTitle || "Why I Built It?"}
                       </h2>
                       <div className="prose prose-neutral prose-lg max-w-none text-neutral-600 leading-relaxed text-sm md:text-base">
                         <ReactMarkdown

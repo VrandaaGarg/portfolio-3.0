@@ -39,10 +39,11 @@ export const experienceData: Experience[] = [
       },
     ],
     description: [
-      "Delivered the website build, including micro-interactive elements that highlight key features and provide clear visual feedback.",
-      "Redesigned the dashboard UI/UX to improve clarity and make the workflow easier to follow between pages.",
-      "Resolved user-flow blocking bugs, including real-time updates that improved car-queue productivity and reliability.",
-      "Shipped core product features with thoughtful UI/UX enhancements to elevate overall usability and engagement.",
+      "Shipped end-to-end product features across the marketing site and dashboard, owning the work from UI design through API integration.",
+      "Built high-touch micro-interactions and polished UX patterns that make key product moments feel premium and easy to follow.",
+      "Redesigned the dashboard UX to streamline cross-page workflows and reduce friction for the operations team.",
+      "Built internal tools and workflow improvements that lifted day-to-day team productivity, including real-time updates for the car-queue system.",
+      "Turned tight, deadline-driven scopes into shipped features quickly without compromising on UI quality.",
     ],
     technologies: [
       "Next.js",

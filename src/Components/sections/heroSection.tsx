@@ -15,6 +15,7 @@ import Projects from "./projects";
 import Experience from "./experience";
 import Contact from "./contact";
 import PixelTransition from "../ui/PixelTransition";
+import AboutClaims from "../ui/AboutClaims";
 import SkillsMarquee from "../ui/SkillsMarquee";
 import Image from "next/image";
 import Link from "next/link";
@@ -192,21 +193,7 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
               className="space-y-3 my-4 md:my-8"
             >
-              <p className="text-md md:text-lg text-center md:text-left text-neutral-600 leading-relaxed">
-                Full Stack Developer specializing in modern web applications with{" "}
-                <span className="text-foreground font-semibold">Next.js</span>,{" "}
-                <span className="text-foreground font-semibold">TypeScript</span>, and{" "}
-                <span className="text-foreground font-semibold">React</span>. I build scalable,
-                performant solutions featuring real-time systems, AI integration, and seamless
-                user experiences. 
-                {/* Expert in{" "}
-                <span className="text-foreground font-semibold">Appwrite</span>,{" "}
-                <span className="text-foreground font-semibold">Redis</span>, and{" "}
-                <span className="text-foreground font-semibold">Server-Sent Events</span> for
-                cutting-edge full-stack applications. */}
-              </p>
-
-
+              <AboutClaims />
             </motion.div>
 
             <motion.div

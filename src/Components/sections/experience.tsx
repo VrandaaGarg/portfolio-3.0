@@ -21,7 +21,7 @@ export default function Experience() {
     const item = experienceData[0];
 
     return (
-      <section className="py-12 md:py-16 px-5 md:px-8 relative">
+      <section id="experience" className="py-12 md:py-16 px-5 md:px-8 relative scroll-mt-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -152,7 +152,7 @@ export default function Experience() {
 
   // Timeline Layout (Multiple Items)
   return (
-    <section className="py-16 px-8 relative">
+    <section id="experience" className="py-16 px-8 relative scroll-mt-24">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

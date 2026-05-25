@@ -4,7 +4,6 @@ import {
 } from 'react-icons/ri';
 import { 
   FaReact, 
-  FaJava, 
   FaPython 
 } from 'react-icons/fa';
 import { 
@@ -19,7 +18,6 @@ import {
   SiAppwrite, 
   SiGithub, 
   SiVercel,
-  SiRedis
 } from 'react-icons/si';
 import { 
   DiNodejs 
@@ -36,11 +34,16 @@ import {
 } from 'lucide-react';
 import type { IconType } from 'react-icons';
 import type { LucideIcon } from 'lucide-react';
+import type { ComponentType, SVGProps } from 'react';
+import { CloudFlareIcon, PlanetScaleIcon, RedisIcon } from '@/Components/icons/CustomIcons';
+
+export type SkillIcon = IconType | LucideIcon | ComponentType<SVGProps<SVGSVGElement>>;
 
 export interface Skill {
   name: string;
-  icon?: IconType | LucideIcon;
+  icon?: SkillIcon;
   image?: string;
+  grayscale?: boolean;
 }
 
 export const skillsData: Record<string, Skill[]> = {
@@ -57,19 +60,19 @@ export const skillsData: Record<string, Skill[]> = {
     { name: "Node.js", icon: DiNodejs },
     { name: "Express.js", icon: SiExpress },
     { name: "MongoDB", icon: SiMongodb },
+    { name: "PlanetScale", icon: PlanetScaleIcon },
     { name: "Firebase", icon: SiFirebase },
     { name: "Appwrite", icon: SiAppwrite },
     { name: "MySQL", icon: GrMysql },
-    { name: "Redis", icon: SiRedis },
+    { name: "Redis", icon: RedisIcon, grayscale: true },
+    { name: "Cloudflare", icon: CloudFlareIcon },
   ],
   "Programming Languages & Tools": [
     { name: "Vercel AI SDK", icon: SiVercel },
     { name: "Git", icon: GitBranch },
     { name: "GitHub", icon: SiGithub },
-    { name: "Vercel", icon: SiVercel },
     { name: "C++", icon: TbBrandCpp },
     { name: "C", icon: Hash },
-    { name: "Java", icon: FaJava },
     { name: "Python", icon: FaPython }, 
   ],
 };

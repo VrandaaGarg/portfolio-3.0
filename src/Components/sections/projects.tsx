@@ -36,7 +36,6 @@ export default function Projects({ limit }: ProjectsProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-
         <div className="flex items-center flex-col justify-center mb-8">
           <div className="bg-card text-foreground mb-3 px-4 py-1 rounded-full text-sm font-medium border border-neutral-300 shadow-sm">
             Work
@@ -48,7 +47,7 @@ export default function Projects({ limit }: ProjectsProps) {
             These are some of the projects I&apos;ve worked on. I love building
             things and I&apos;m always looking for new challenges.
           </div>
-          {pathname === "/" && (
+          {isHomePage && (
             <div className="mt-4">
               <Link
                 href="/projects"
@@ -74,6 +73,7 @@ export default function Projects({ limit }: ProjectsProps) {
               githubUrl={project.githubUrl}
               liveDemoUrl={project.liveDemoUrl}
               index={index}
+              featured={project.featured}
             />
           ))}
         </div>

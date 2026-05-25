@@ -94,6 +94,7 @@ export default function Skills() {
                   name={skill.name}
                   icon={skill.icon}
                   image={skill.image}
+                  grayscale={skill.grayscale}
                 />
               </motion.div>
             ))}

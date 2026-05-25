@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IconBrandGithub } from "@tabler/icons-react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import SpotlightCard from "./SpotlightCard";
 import { getOptimizedMediaUrl } from "@/lib/utils";
@@ -21,6 +21,7 @@ interface ProjectCardProps {
   githubUrl: string;
   liveDemoUrl?: string;
   index: number;
+  featured?: boolean;
 }
 
 export default function ProjectCard({
@@ -32,6 +33,7 @@ export default function ProjectCard({
   githubUrl,
   liveDemoUrl,
   index,
+  featured,
 }: ProjectCardProps) {
   const hasVideo = !!video;
   const [showVideo, setShowVideo] = useState(hasVideo);
@@ -81,6 +83,16 @@ export default function ProjectCard({
         onClick={handleCardClick}
       >
         <div className="relative h-48 w-full overflow-hidden">
+          {featured && (
+            <div className="absolute top-3 right-3 z-20">
+              {/* offset black shadow layer */}
+              <div className="absolute inset-0 translate-x-1 translate-y-1 bg-black rounded-md" />
+              <div className="relative inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold bg-lime-300 text-black border-2 border-black">
+                <Sparkles className="w-3 h-3" strokeWidth={2.5} />
+                Featured
+              </div>
+            </div>
+          )}
           {hasVideo && (
             <>
               <button
