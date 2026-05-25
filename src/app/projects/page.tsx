@@ -5,24 +5,29 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Projects",
   description:
-    "Explore my portfolio of innovative web applications including CappyChat (AI chat platform), Bashio (AI CLI tool), Quoridor Online (multiplayer board game), ResuMate (AI resume builder), CappyUI, SkillCompass, SmartBite, and more. Built with Next.js, React, TypeScript, and modern web technologies.",
+    "Explore my portfolio of AI-powered products and full-stack web applications: MemContext (persistent memory for AI agents), MUJ General (research repository), CappyChat (AI chat platform), CappyUI (component library), Bashio (AI CLI), ResuMate (AI resume builder), Quoridor Online (real-time multiplayer), SkillCompass, SmartBite, and more. Built with Next.js, React, TypeScript, and modern AI tooling.",
   keywords: [
     "Vranda Garg Projects",
+    "AI Products",
+    "AI Engineer Portfolio",
     "Web Development Projects",
     "Next.js Projects",
     "React Projects",
     "Portfolio Projects",
+    "MemContext",
+    "MUJ General",
     "CappyChat",
+    "CappyUI",
     "Bashio",
     "Quoridor Online",
     "ResuMate",
-    "CappyUI",
+    "SkillCompass",
     "Full Stack Projects",
   ],
   openGraph: {
     title: "Projects - Vranda Garg Portfolio",
     description:
-      "Explore innovative web applications and projects built with Next.js, React, TypeScript, and modern web technologies.",
+      "AI-powered products and full-stack web apps including MemContext, MUJ General, CappyChat, CappyUI, Bashio, ResuMate, and Quoridor Online. Built with Next.js, React, TypeScript, and modern AI tooling.",
     url: "https://vrandagarg.in/projects",
     siteName: "Vranda Garg - Portfolio",
     type: "website",
@@ -39,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Projects - Vranda Garg Portfolio",
     description:
-      "Explore innovative web applications and projects built with modern web technologies.",
+      "AI-powered products and full-stack web apps shipped end-to-end with strong UI/UX.",
     creator: "@vrandaagarg",
     images: ["https://res.cloudinary.com/dyetf2h9n/image/upload/v1765637887/banner_hfyoau.png"],
   },

@@ -94,7 +94,7 @@ const socialProfiles = [
   "https://x.com/vrandaagarg",
   "https://www.linkedin.com/in/vrandagarg/",
   "https://github.com/VrandaaGarg",
-  "https://peerlist.io/vrandagarg",
+  "mailto:hi@vrandagarg.in",
 ];
 
 export function StructuredData() {
@@ -115,7 +115,7 @@ export function StructuredData() {
     name: "Vranda Garg",
     jobTitle: "Full Stack Developer",
     description:
-      "Full Stack Developer specializing in Next.js, TypeScript, and React. Expert in building scalable web applications, AI-powered platforms, and real-time systems.",
+      "Full Stack Developer who ships AI-powered products end-to-end with strong UI/UX. Builds production AI apps, real-time systems, and internal tools that lift team productivity. Creator of MemContext, MUJ General, CappyChat, CappyUI, Bashio, ResuMate, and Quoridor Online.",
     url: siteUrl,
     image: "https://res.cloudinary.com/dyetf2h9n/image/upload/v1765637887/banner_hfyoau.png",
     sameAs: socialProfiles,
@@ -139,7 +139,7 @@ export function StructuredData() {
       name: "Vranda Garg",
       jobTitle: "Full Stack Developer",
       description:
-        "Full Stack Developer specializing in Next.js, TypeScript, and React. Frontend Developer at Kakiyo OÜ. Creator of innovative web applications including CappyUI, CappyChat, Quoridor Online, and ResuMate.",
+        "Full Stack Developer at Kakiyo OÜ who ships AI-powered products end-to-end. Built MemContext, MUJ General, CappyChat, CappyUI, Bashio, ResuMate, and Quoridor Online. Specializes in Next.js, React, TypeScript, AI integration, and real-time systems.",
     },
   };
 
@@ -176,20 +176,23 @@ export function StructuredData() {
   const serviceSchema: ProfessionalServiceSchema = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    name: "Full Stack Web Development Services",
+    name: "Full Stack and AI Product Engineering Services",
     provider: {
       "@type": "Person",
       name: "Vranda Garg",
     },
     description:
-      "Full Stack Web Development specializing in Next.js, React, TypeScript, AI integration, real-time systems, and scalable applications.",
+      "Ships AI-powered products end-to-end with strong UI/UX. Specializes in Next.js, React, TypeScript, AI integration, real-time systems, and internal tools that lift team productivity.",
     areaServed: "Worldwide",
     serviceType: [
+      "AI Product Development",
       "Frontend Development",
       "Backend Development",
       "Full Stack Development",
       "UI/UX Design",
       "Web Application Development",
+      "Real-time Systems",
+      "Internal Tools Development",
     ],
   };
 

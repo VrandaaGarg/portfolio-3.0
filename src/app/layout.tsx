@@ -20,7 +20,7 @@ const inter = Inter({
 const siteUrl = "https://vrandagarg.in";
 const siteName = "Vranda Garg - Full Stack Developer";
 const description =
-  "Full Stack Developer specializing in Next.js, TypeScript, and React. Expert in building scalable web applications, AI-powered platforms, and real-time systems. Frontend Developer at Kakiyo OÜ. Creator of CappyChat, Quoridor Online, ResuMate, and more.";
+  "Full Stack Developer who ships AI-powered products end-to-end with strong UI/UX. Currently at Kakiyo OÜ. Creator of MemContext, MUJ General, CappyChat, CappyUI, Bashio, ResuMate, and Quoridor Online. Specializing in Next.js, TypeScript, React, real-time systems, and AI integration.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -39,12 +39,22 @@ export const metadata: Metadata = {
     "Web Developer",
     "UI/UX Developer",
     "Software Engineer",
+    "AI Developer",
+    "AI Product Engineer",
+    "Real-time Systems",
+    "MemContext",
+    "MUJ General",
     "CappyChat",
+    "CappyUI",
+    "Bashio",
     "Quoridor Online",
     "ResuMate",
-    "AI Developer",
-    "Real-time Systems",
+    "SkillCompass",
     "Kakiyo OÜ",
+    "Drizzle ORM",
+    "Neon Postgres",
+    "Better Auth",
+    "Cloudflare R2",
   ],
   authors: [{ name: "Vranda Garg" }],
   creator: "Vranda Garg",
