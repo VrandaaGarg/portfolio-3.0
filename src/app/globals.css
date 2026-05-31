@@ -218,3 +218,45 @@ html {
   display: none;
   position: absolute;
 }
+
+/* GitHub Contribution Calendar — theme overrides */
+.gh-cal-wrapper .react-activity-calendar {
+  width: 100%;
+  gap: 4px !important;
+}
+
+.gh-cal-wrapper .react-activity-calendar__count,
+.gh-cal-wrapper .react-activity-calendar__legend-colors,
+.gh-cal-wrapper text {
+  color: var(--neutral-500) !important;
+  fill: var(--neutral-500) !important;
+}
+
+.gh-cal-wrapper .react-activity-calendar__footer {
+  margin-top: 4px !important;
+  font-size: 12px;
+}
+
+.gh-cal-wrapper svg {
+  display: block;
+}
+
+/* Tooltip overrides — ensure visibility above stacking contexts */
+.react-activity-calendar__tooltip {
+  z-index: 9999 !important;
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--neutral-300) !important;
+  font-size: 12px !important;
+  padding: 0.35em 0.6em !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.react-activity-calendar__tooltip[data-color-scheme='dark'] {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+}
+
+.react-activity-calendar__tooltip-arrow {
+  fill: var(--card) !important;
+}

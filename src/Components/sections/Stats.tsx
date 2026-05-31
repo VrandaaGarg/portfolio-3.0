@@ -7,6 +7,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Code, Star } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import { GitHubCalendar } from "react-github-calendar";
+import "react-github-calendar/tooltips.css";
 import SpotlightCard from "../ui/SpotlightCard";
 
 interface WakaTimeStats {
@@ -17,6 +20,8 @@ interface WakaTimeStats {
 export default function Stats() {
     const [wakaTime, setWakaTime] = useState<WakaTimeStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const { resolvedTheme } = useTheme();
+    const colorScheme = resolvedTheme === "light" ? "light" : "dark";
 
     useEffect(() => {
         const STORAGE_KEY = 'wakatime_stats';
@@ -100,42 +105,6 @@ export default function Stats() {
                                     <p className="text-slate-50 text-sm line-clamp-1">
                                         Next-generation AI chat platform engineered for performance and scalability.
                                     </p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-                </motion.div>
-
-                {/* GitHub Heatmap */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    viewport={{ once: true }}
-                    className="md:col-span-2 h-48"
-                >
-                    <Link href="https://github.com/VrandaaGarg/" target="_blank" className="h-full block">
-                        <div className="h-full bg-card border border-neutral-300/70 rounded-xl p-4 flex items-center justify-center shadow-sm relative overflow-hidden">
-                            <div className="absolute inset-0 bg-card" />
-                            <div className="relative  scale-105  z-10 w-full h-full flex flex-col justify-center">
-                                <div className="flex items-center gap-2 mb-2 px-2">
-                                    <div className="w-3 h-3 rounded-sm bg-green-700" />
-                                    <div className="w-3 h-3 rounded-sm bg-green-500" />
-                                    <div className="w-3 h-3 rounded-sm bg-green-400" />
-                                    <div className="w-3 h-3 rounded-sm bg-green-200" />
-                                    <span className="text-xs text-neutral-500 ml-auto">Contribution Graph</span>
-                                </div>
-                                {/* Using an image for heatmap as per request visual style, referencing user's actual github if possible or placeholder */}
-                                {/* Since I can't dynamically generate it easily without a library, I'll use a stylized placeholder or an image API */}
-                                <div className="w-full h-full overflow-hidden  rounded-xl opacity-100 transition-opacity relative">
-                                    {/* Using ghchart as a placeholder representation */}
-                                    <Image
-                                        src="https://ghchart.rshah.org/03C851/VrandaaGarg"
-                                        alt="GitHub Contributions"
-                                        fill
-                                        unoptimized
-                                        className="object-cover object-right"
-                                    />
                                 </div>
                             </div>
                         </div>
@@ -236,7 +205,7 @@ export default function Stats() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
                     viewport={{ once: true }}
-                    className="md:col-span-2 h-48"
+                    className="md:col-span-1 h-48"
                 >
                     <SpotlightCard
                         className="h-full bg-card rounded-xl shadow flex items-center justify-center relative overflow-hidden group"
@@ -247,16 +216,70 @@ export default function Stats() {
                             <IconBrandDiscord className="w-40 h-40 text-foreground rotate-12" />
                         </div>
 
-                        <div className="relative z-10 text-center">
-                            <div className="flex items-center justify-center gap-2 mb-1">
-                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                <span className="text-neutral-400 font-medium tracking-widest uppercase text-sm">Discord</span>
+                        <div className="relative z-10 text-center px-3">
+                            <div className="flex items-center justify-center gap-1.5 mb-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                <span className="text-neutral-400 font-medium tracking-widest uppercase text-[10px]">Discord</span>
                             </div>
-                            <h3 className="text-2xl font-bold text-foreground mb-1">vrandagarg</h3>
-                            <p className="text-neutral-500 text-sm">Let&apos;s chat about tech & projects</p>
+                            <h3 className="text-lg font-bold text-foreground mb-1">vrandagarg</h3>
+                            <p className="text-neutral-500 text-[10px] leading-tight">Let&apos;s chat about tech &amp; projects</p>
                         </div>
                        </div>
                     </SpotlightCard>
+                </motion.div>
+
+                {/* GitHub Heatmap */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
+                    viewport={{ once: true }}
+                    className="md:col-span-3 h-48"
+                >
+                    <div className="h-full bg-card border border-neutral-300/70 rounded-xl px-4 py-3 flex flex-col shadow-sm relative gh-cal-wrapper overflow-hidden">
+                        <div className="mb-1 shrink-0">
+                            <span className="text-sm font-semibold text-foreground">
+                                GitHub Contributions
+                            </span>
+                        </div>
+                        <div className="w-full flex-1 flex items-center">
+                            <GitHubCalendar
+                                username="VrandaaGarg"
+                                colorScheme={colorScheme}
+                                theme={{
+                                    light: ['#EBEDF0', '#9BE9A8', '#40C463', '#30A14E', '#216E39'],
+                                    dark: ['#161B22', '#0E4429', '#006D32', '#26A641', '#39D353'],
+                                }}
+                                blockSize={8}
+                                blockMargin={3}
+                                blockRadius={2}
+                                fontSize={11}
+                                showColorLegend
+                                showTotalCount
+                                showMonthLabels
+                                style={{ color: '#a3a3a3' }}
+                                labels={{
+                                    totalCount: '{{count}} contributions in {{year}}',
+                                }}
+                                tooltips={{
+                                    activity: {
+                                        text: (activity) => {
+                                            const formatted = new Date(activity.date).toLocaleDateString('en-US', {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                year: 'numeric',
+                                            });
+                                            return activity.count === 0
+                                                ? `No contributions on ${formatted}`
+                                                : `${activity.count} contribution${activity.count === 1 ? '' : 's'} on ${formatted}`;
+                                        },
+                                        offset: 8,
+                                        withArrow: true,
+                                    },
+                                }}
+                            />
+                        </div>
+                    </div>
                 </motion.div>
 
             </div>
