@@ -7,7 +7,7 @@ Copyright 2025 Vranda Garg
 If you use, modify, or distribute this project or any part of it, you MUST:
 
 1. **Attribution**: Give clear and visible credit to **Vranda Garg** as the original author
-2. **Link Back**: Include a link to the original repository: https://github.com/VrandaaGarg/next-portfolio
+2. **Link Back**: Include a link to the original repository: https://github.com/VrandaaGarg/portfolio-3.0
 
 ---
 
