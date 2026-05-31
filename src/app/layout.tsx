@@ -118,6 +118,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${playfair.variable} ${inter.variable} antialiased flex flex-col min-h-screen relative font-sans`}
+        suppressHydrationWarning
       >
         <StructuredData />
         <ThemeProvider>

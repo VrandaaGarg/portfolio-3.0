@@ -107,7 +107,98 @@ function SocialIconWithTooltip({
   );
 }
 
+function AvailabilityIndicator({
+  avatarRef,
+}: {
+  avatarRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+  // The avatar uses PixelTransition which flips on mouseenter/leave.
+  // Since the indicator overlaps it, force the avatar back to its
+  // default image while the indicator is hovered.
+  const dispatchAvatarEvent = (type: "mouseenter" | "mouseleave") => {
+    const el = avatarRef.current?.querySelector(".pixelated-image-card");
+    if (el) {
+      el.dispatchEvent(new MouseEvent(type, { bubbles: false }));
+    }
+  };
+
+  // Close the tooltip when tapping/clicking outside (mobile).
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handlePointerDown = (e: PointerEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [isOpen]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="absolute bottom-1.5 right-1.5 md:bottom-2.5 md:right-2.5 z-20"
+      onMouseEnter={() => {
+        setIsOpen(true);
+        dispatchAvatarEvent("mouseleave");
+      }}
+      onMouseLeave={() => {
+        setIsOpen(false);
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, delay: 0.6, type: "spring", stiffness: 300, damping: 15 }}
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen((prev) => !prev);
+          dispatchAvatarEvent("mouseleave");
+        }}
+        className="relative flex h-4 w-4 md:h-5 md:w-5 cursor-pointer items-center justify-center rounded-full bg-card ring-2 ring-card"
+      >
+        {/* Animated pulse ring */}
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+        {/* Solid dot */}
+        <span className="relative inline-flex h-2.5 w-2.5 md:h-3 md:w-3 rounded-full bg-emerald-500 shadow-[0_0_8px_2px_rgba(16,185,129,0.6)]" />
+      </motion.div>
+
+      <AnimatePresence mode="popLayout">
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.7 }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              transition: { type: "spring", stiffness: 260, damping: 14 },
+            }}
+            exit={{ opacity: 0, y: 8, scale: 0.7 }}
+            style={{ whiteSpace: "nowrap" }}
+            className="absolute bottom-[calc(100%+10px)] left-1/2 -translate-x-1/2 flex flex-col items-center justify-center rounded-lg border border-foreground bg-foreground px-3 py-1.5 shadow-xl z-50"
+          >
+            <div className="absolute inset-x-6 -bottom-px h-px w-[30%] bg-linear-to-r from-transparent via-emerald-500 to-transparent" />
+            <div className="absolute left-4 -bottom-px h-px w-[40%] bg-linear-to-r from-transparent via-sky-500 to-transparent" />
+            <div className="relative z-30 flex items-center gap-1.5 text-xs font-bold text-background">
+              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              Available for freelance
+            </div>
+            {/* Downward caret / triangle */}
+            <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-px h-0 w-0 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-foreground" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function HeroSection() {
+  const avatarRef = React.useRef<HTMLDivElement | null>(null);
   const roles = [
     "A Full Stack Developer",
     "A Frontend Expert",
@@ -157,7 +248,7 @@ export default function HeroSection() {
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                 className="shrink-0"
               >
-                <div className="w-28 h-28 md:w-40 md:h-40">
+                <div ref={avatarRef} className="relative w-28 h-28 md:w-40 md:h-40">
                   <PixelTransition
                     firstContent={
                       <Image
@@ -183,6 +274,7 @@ export default function HeroSection() {
                     animationStepDuration={0.4}
                     aspectRatio="100%"
                   />
+                  <AvailabilityIndicator avatarRef={avatarRef} />
                 </div>
               </motion.div>
             </div>

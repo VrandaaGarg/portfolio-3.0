@@ -20,8 +20,13 @@ interface WakaTimeStats {
 export default function Stats() {
     const [wakaTime, setWakaTime] = useState<WakaTimeStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
     const { resolvedTheme } = useTheme();
     const colorScheme = resolvedTheme === "light" ? "light" : "dark";
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const STORAGE_KEY = 'wakatime_stats';
@@ -243,41 +248,45 @@ export default function Stats() {
                             </span>
                         </div>
                         <div className="w-full flex-1 flex items-center">
-                            <GitHubCalendar
-                                username="VrandaaGarg"
-                                colorScheme={colorScheme}
-                                theme={{
-                                    light: ['#EBEDF0', '#9BE9A8', '#40C463', '#30A14E', '#216E39'],
-                                    dark: ['#161B22', '#0E4429', '#006D32', '#26A641', '#39D353'],
-                                }}
-                                blockSize={8}
-                                blockMargin={3}
-                                blockRadius={2}
-                                fontSize={11}
-                                showColorLegend
-                                showTotalCount
-                                showMonthLabels
-                                style={{ color: '#a3a3a3' }}
-                                labels={{
-                                    totalCount: '{{count}} contributions in {{year}}',
-                                }}
-                                tooltips={{
-                                    activity: {
-                                        text: (activity) => {
-                                            const formatted = new Date(activity.date).toLocaleDateString('en-US', {
-                                                month: 'short',
-                                                day: 'numeric',
-                                                year: 'numeric',
-                                            });
-                                            return activity.count === 0
-                                                ? `No contributions on ${formatted}`
-                                                : `${activity.count} contribution${activity.count === 1 ? '' : 's'} on ${formatted}`;
+                            {mounted ? (
+                                <GitHubCalendar
+                                    username="VrandaaGarg"
+                                    colorScheme={colorScheme}
+                                    theme={{
+                                        light: ['#EBEDF0', '#9BE9A8', '#40C463', '#30A14E', '#216E39'],
+                                        dark: ['#161B22', '#0E4429', '#006D32', '#26A641', '#39D353'],
+                                    }}
+                                    blockSize={8}
+                                    blockMargin={3}
+                                    blockRadius={2}
+                                    fontSize={11}
+                                    showColorLegend
+                                    showTotalCount
+                                    showMonthLabels
+                                    style={{ color: '#a3a3a3' }}
+                                    labels={{
+                                        totalCount: '{{count}} contributions in {{year}}',
+                                    }}
+                                    tooltips={{
+                                        activity: {
+                                            text: (activity) => {
+                                                const formatted = new Date(activity.date).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric',
+                                                });
+                                                return activity.count === 0
+                                                    ? `No contributions on ${formatted}`
+                                                    : `${activity.count} contribution${activity.count === 1 ? '' : 's'} on ${formatted}`;
+                                            },
+                                            offset: 8,
+                                            withArrow: true,
                                         },
-                                        offset: 8,
-                                        withArrow: true,
-                                    },
-                                }}
-                            />
+                                    }}
+                                />
+                            ) : (
+                                <div className="w-full h-[110px] animate-pulse rounded-md bg-neutral-200/40 dark:bg-neutral-800/40" />
+                            )}
                         </div>
                     </div>
                 </motion.div>
