@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { IconBrandGithub, IconBrandLinkedin, IconBrandDiscord } from "@tabler/icons-react";
 import { RiTwitterXLine } from "react-icons/ri";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "@/Components/ui/Image";
+import Link from "@/Components/ui/Link";
 import { ArrowUpRight, Code, Star } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";

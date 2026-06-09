@@ -1,18 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLocation } from "@tanstack/react-router";
 import { projectsData } from "@/data/projects";
 import ProjectCard from "@/Components/ui/ProjectCard";
 import { ChevronDown } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/Components/ui/Link";
 
 interface ProjectsProps {
   limit?: number;
 }
 
 export default function Projects({ limit }: ProjectsProps) {
-  const pathname = usePathname();
+  const pathname = useLocation({ select: (location) => location.pathname });
   const isHomePage = pathname === "/";
 
   const sortedProjects = [...projectsData].sort((a, b) => {

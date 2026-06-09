@@ -1,4 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { createFileRoute } from "@tanstack/react-router";
+import type { ContributorStats, GitHubStatsResponse } from "@/types/github-stats";
+
+export const Route = createFileRoute("/api/github-stats")({
+  server: {
+    handlers: {
+      GET,
+    },
+  },
+});
 
 interface GitHubWeekStats {
   w: number;
@@ -26,24 +35,6 @@ interface GitHubContributorSummary {
   avatar_url: string;
   html_url: string;
   contributions: number;
-}
-
-export interface ContributorStats {
-  login: string;
-  id: number;
-  avatarUrl: string;
-  profileUrl: string;
-  totalCommits: number;
-  additions: number | null;
-  deletions: number | null;
-  percentageOfTop: number;
-}
-
-export interface GitHubStatsResponse {
-  success: boolean;
-  contributors?: ContributorStats[];
-  hasLineStats?: boolean;
-  error?: string;
 }
 
 const FETCH_TIMEOUT_MS = 15000;
@@ -282,7 +273,7 @@ function createSuccessResponse(
   contributors: ContributorStats[],
   hasLineStats: boolean
 ) {
-  return NextResponse.json(
+  return Response.json(
     { success: true, contributors, hasLineStats } satisfies GitHubStatsResponse,
     {
       status: 200,
@@ -293,12 +284,12 @@ function createSuccessResponse(
   );
 }
 
-export async function GET(request: NextRequest) {
+export async function GET({ request }: { request: Request }) {
   const { searchParams } = new URL(request.url);
   const repoUrl = searchParams.get("repo");
 
   if (!repoUrl) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: "Missing repo parameter" } as GitHubStatsResponse,
       { status: 400 }
     );
@@ -306,7 +297,7 @@ export async function GET(request: NextRequest) {
 
   const parsed = parseGitHubUrl(repoUrl);
   if (!parsed) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: "Invalid GitHub URL" } as GitHubStatsResponse,
       { status: 400 }
     );
@@ -327,26 +318,26 @@ export async function GET(request: NextRequest) {
     if (contributorsResponse.status === 403) {
       const remaining = contributorsResponse.headers.get("x-ratelimit-remaining");
       if (remaining === "0") {
-        return NextResponse.json(
+        return Response.json(
           { success: false, error: "GitHub API rate limit exceeded. Please try again later." } as GitHubStatsResponse,
           { status: 429 }
         );
       }
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: "Access denied to repository" } as GitHubStatsResponse,
         { status: 403 }
       );
     }
 
     if (contributorsResponse.status === 404) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: "Repository not found" } as GitHubStatsResponse,
         { status: 404 }
       );
     }
 
     if (!contributorsResponse.ok) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: "Failed to fetch repository contributors" } as GitHubStatsResponse,
         { status: contributorsResponse.status }
       );
@@ -395,7 +386,7 @@ export async function GET(request: NextRequest) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error(`GitHub API error for ${owner}/${repo}:`, message);
     
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: "Failed to fetch GitHub stats" } as GitHubStatsResponse,
       { status: 500 }
     );

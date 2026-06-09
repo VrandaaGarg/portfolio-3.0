@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "@/Components/ui/Image";
+import Link from "@/Components/ui/Link";
 import { motion } from "framer-motion";
 import { GitCommit, Plus, Minus, Loader2, AlertCircle, Users } from "lucide-react";
-import type { ContributorStats as ContributorStatsType, GitHubStatsResponse } from "@/app/api/github-stats/route";
+import type { ContributorStats as ContributorStatsType, GitHubStatsResponse } from "@/types/github-stats";
 import SpotlightCard from "./SpotlightCard";
 
 interface ContributorStatsProps {

@@ -1,31 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/Components/ui/Link";
 import { socialLinks } from "@/data/social";
 import Magnetic from "@/Components/ui/Magnetic";
-import { useEffect, useState } from "react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [time, setTime] = useState<string>("");
-  const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "";
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setTime(
-        now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-          timeZone: "Asia/Kolkata",
-        })
-      );
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const email = import.meta.env.VITE_CONTACT_EMAIL ?? import.meta.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "";
 
   return (
     <footer className="w-full relative overflow-hidden border-t border-neutral-200 bg-background/50 backdrop-blur-sm">

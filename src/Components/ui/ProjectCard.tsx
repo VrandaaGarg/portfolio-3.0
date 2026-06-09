@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "@tanstack/react-router";
+import Image from "@/Components/ui/Image";
+import Link from "@/Components/ui/Link";
 import { IconBrandGithub } from "@tabler/icons-react";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -38,8 +38,8 @@ export default function ProjectCard({
   const hasVideo = !!video;
   const [showVideo, setShowVideo] = useState(hasVideo);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const router = useRouter();
-  const projectUrl = `/projects/${name.toLowerCase().replace(/\s+/g, "-")}`;
+  const navigate = useNavigate();
+  const projectSlug = name.toLowerCase().replace(/\s+/g, "-");
 
   useEffect(() => {
     if (!videoRef.current || !showVideo) return;
@@ -66,7 +66,7 @@ export default function ProjectCard({
   }, [showVideo]);
 
   const handleCardClick = () => {
-    router.push(projectUrl);
+    navigate({ to: "/projects/$name", params: { name: projectSlug } });
   };
 
   return (
@@ -191,7 +191,7 @@ export default function ProjectCard({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(projectUrl);
+                navigate({ to: "/projects/$name", params: { name: projectSlug } });
               }}
               className="flex-1 px-4 py-2.5 rounded-lg border border-foreground bg-neutral-800 text-background hover:bg-neutral-950 transition-colors text-center text-sm font-medium cursor-pointer"
             >

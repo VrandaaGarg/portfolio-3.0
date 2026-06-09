@@ -1,11 +1,20 @@
-import { NextResponse } from 'next/server';
+import { createFileRoute } from "@tanstack/react-router";
 
-const WAKATIME_API_KEY = process.env.WAKATIME_API_KEY;
 const WAKATIME_API_URL = 'https://wakatime.com/api/v1/users/current/stats/last_7_days';
 
+export const Route = createFileRoute("/api/wakatime")({
+  server: {
+    handlers: {
+      GET,
+    },
+  },
+});
+
 export async function GET() {
+  const WAKATIME_API_KEY = process.env.WAKATIME_API_KEY;
+
   if (!WAKATIME_API_KEY) {
-    return NextResponse.json(
+    return Response.json(
       { error: 'WakaTime API key not configured' },
       { status: 500 }
     );
@@ -16,7 +25,6 @@ export async function GET() {
       headers: {
         Authorization: `Basic ${Buffer.from(WAKATIME_API_KEY).toString('base64')}`,
       },
-      next: { revalidate: 3600 },
     });
 
     if (!response.ok) {
@@ -32,10 +40,14 @@ export async function GET() {
       humanReadableDailyAverage: data.data.human_readable_daily_average,
     };
 
-    return NextResponse.json(stats);
+    return Response.json(stats, {
+      headers: {
+        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      },
+    });
   } catch (error) {
     console.error('Error fetching WakaTime stats:', error);
-    return NextResponse.json(
+    return Response.json(
       { error: 'Failed to fetch WakaTime stats' },
       { status: 500 }
     );

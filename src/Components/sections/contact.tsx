@@ -33,7 +33,7 @@ export default function Contact() {
     const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
     const [view, setView] = useState<"technical" | "non-technical">("technical");
     const [activeFile, setActiveFile] = useState<"contact.tsx" | "socialLinks.tsx">("contact.tsx");
-    const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "";
+    const email = import.meta.env.VITE_CONTACT_EMAIL ?? import.meta.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "";
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -215,7 +215,7 @@ export default function Contact() {
                                                     <div className="pl-3">
                                                         <div className="flex items-center gap-1 py-1 px-2 text-xs hover:bg-card cursor-pointer rounded-sm select-none">
                                                             <ChevronRight className="w-3 h-3 text-neutral-700" />
-                                                            <span className="text-neutral-700">.next</span>
+                                                            <span className="text-neutral-700">.output</span>
                                                         </div>
                                                         <div className="flex items-center gap-1 py-1 px-2 text-xs hover:bg-card cursor-pointer rounded-sm select-none">
                                                             <ChevronDown className="w-3 h-3 text-neutral-700" />

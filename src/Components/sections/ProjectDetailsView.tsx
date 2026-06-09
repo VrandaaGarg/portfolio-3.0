@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, Variants } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "@/Components/ui/Image";
+import Link from "@/Components/ui/Link";
 import {
   ExternalLink,
   ArrowLeft,

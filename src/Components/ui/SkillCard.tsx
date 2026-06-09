@@ -1,5 +1,5 @@
 
-import Image from "next/image";
+import Image from "@/Components/ui/Image";
 import { cn } from "@/lib/utils";
 import SpotlightCard from "@/Components/ui/SpotlightCard";
 import type { SkillIcon } from "@/data/skills";

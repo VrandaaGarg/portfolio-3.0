@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
+import Link from "@/Components/ui/Link";
 import { ExternalLink } from "lucide-react";
 
 interface EvidenceItem {

@@ -1,7 +1,13 @@
 import { Resend } from "resend";
-import { NextResponse } from "next/server";
+import { createFileRoute } from "@tanstack/react-router";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const Route = createFileRoute("/api/contact")({
+  server: {
+    handlers: {
+      POST,
+    },
+  },
+});
 
 interface ContactFormData {
   name: string;
@@ -9,22 +15,73 @@ interface ContactFormData {
   message: string;
 }
 
-export async function POST(request: Request) {
-  try {
-    const body: ContactFormData = await request.json();
-    const { name, email, message } = body;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!name || !email || !message) {
-      return NextResponse.json(
+function isContactFormData(data: unknown): data is ContactFormData {
+  if (!data || typeof data !== "object") return false;
+
+  const value = data as Record<string, unknown>;
+  return (
+    typeof value.name === "string" &&
+    typeof value.email === "string" &&
+    typeof value.message === "string"
+  );
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+export async function POST({ request }: { request: Request }) {
+  try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const body = await request.json();
+
+    if (!isContactFormData(body)) {
+      return Response.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    const sanitizedMessage = message
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/\n/g, "<br>");
+    const name = body.name.trim();
+    const email = body.email.trim();
+    const message = body.message.trim();
+
+    if (!name || !email || !message) {
+      return Response.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (
+      name.length > 100 ||
+      email.length > 254 ||
+      message.length > 5000 ||
+      !EMAIL_REGEX.test(email)
+    ) {
+      return Response.json(
+        { error: "Invalid contact form data" },
+        { status: 400 }
+      );
+    }
+
+    if (!process.env.RESEND_FROM_EMAIL || !process.env.CONTACT_EMAIL) {
+      return Response.json(
+        { error: "Email service is not configured" },
+        { status: 500 }
+      );
+    }
+
+    const escapedName = escapeHtml(name);
+    const escapedEmail = escapeHtml(email);
+    const escapedMessage = escapeHtml(message).replace(/\n/g, "<br>");
 
     // Send both emails in parallel
     const [notificationResult, confirmationResult] = await Promise.all([
@@ -58,20 +115,20 @@ export async function POST(request: Request) {
                 <tr>
                   <td style="padding-bottom: 16px;">
                     <p style="margin: 0 0 4px 0; font-size: 12px; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">From</p>
-                    <p style="margin: 0; font-size: 16px; color: #18181b; font-weight: 500;">${name}</p>
+                    <p style="margin: 0; font-size: 16px; color: #18181b; font-weight: 500;">${escapedName}</p>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding-bottom: 16px;">
                     <p style="margin: 0 0 4px 0; font-size: 12px; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Email</p>
-                    <a href="mailto:${email}" style="font-size: 16px; color: #2563eb; text-decoration: none;">${email}</a>
+                    <a href="mailto:${escapedEmail}" style="font-size: 16px; color: #2563eb; text-decoration: none;">${escapedEmail}</a>
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <p style="margin: 0 0 8px 0; font-size: 12px; color: #71717a; text-transform: uppercase; letter-spacing: 0.5px;">Message</p>
                     <div style="background-color: #f4f4f5; padding: 16px; border-radius: 8px; border-left: 3px solid #18181b;">
-                      <p style="margin: 0; font-size: 14px; color: #3f3f46; line-height: 1.6;">${sanitizedMessage}</p>
+                      <p style="margin: 0; font-size: 14px; color: #3f3f46; line-height: 1.6;">${escapedMessage}</p>
                     </div>
                   </td>
                 </tr>
@@ -80,7 +137,7 @@ export async function POST(request: Request) {
           </tr>
           <tr>
             <td style="padding: 16px 24px; background-color: #f4f4f5; text-align: center;">
-              <a href="mailto:${email}" style="display: inline-block; background-color: #18181b; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500;">Reply to ${name}</a>
+              <a href="mailto:${escapedEmail}" style="display: inline-block; background-color: #18181b; color: #ffffff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500;">Reply to ${escapedName}</a>
             </td>
           </tr>
         </table>
@@ -121,7 +178,7 @@ export async function POST(request: Request) {
             <td style="padding: 0 24px 32px 24px;">
               <div style="background-color: #f4f4f5; border-radius: 8px; padding: 24px; text-align: center;">
                 <p style="margin: 0; color: #3f3f46; font-size: 15px; line-height: 1.6;">
-                  Hi <strong>${name}</strong>,<br><br>
+                  Hi <strong>${escapedName}</strong>,<br><br>
                   Thank you for getting in touch! I've received your message and will get back to you as soon as possible.
                 </p>
               </div>
@@ -149,16 +206,16 @@ export async function POST(request: Request) {
 
     if (notificationResult.error || confirmationResult.error) {
       console.error("Resend error:", notificationResult.error || confirmationResult.error);
-      return NextResponse.json(
+      return Response.json(
         { error: "Failed to send email" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ success: true });
+    return Response.json({ success: true });
   } catch (error) {
     console.error("Contact API error:", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "Internal server error" },
       { status: 500 }
     );

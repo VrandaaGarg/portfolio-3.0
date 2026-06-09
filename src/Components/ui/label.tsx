@@ -3,9 +3,7 @@ import { cn } from "@/lib/utils"
 
 const Label = React.forwardRef<
   HTMLLabelElement,
-  React.LabelHTMLAttributes<HTMLLabelElement> 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  & { className?: string }
+  React.LabelHTMLAttributes<HTMLLabelElement>
 >(({ className, ...props }, ref) => (
   <label
     ref={ref}

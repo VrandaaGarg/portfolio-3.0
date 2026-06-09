@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { experienceData } from "@/data/experience";
-import Image from "next/image";
+import Image from "@/Components/ui/Image";
 import { Trophy, Medal, Code, GraduationCap, Briefcase } from "lucide-react";
 import SpotlightCard from "../ui/SpotlightCard";
 

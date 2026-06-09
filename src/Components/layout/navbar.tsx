@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useLocation } from "@tanstack/react-router";
+import Link from "@/Components/ui/Link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Home, FolderOpen, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,7 @@ const spanVariants = {
 export default function Navbar() {
   const [isClient, setIsClient] = useState(false);
   const [selected, setSelected] = useState<number>(0);
-  const pathname = usePathname();
+  const pathname = useLocation({ select: (location) => location.pathname });
 
   useEffect(() => {
     const handleThemeInit = () => {

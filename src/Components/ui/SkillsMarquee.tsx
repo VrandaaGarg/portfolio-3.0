@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
+import Image from "@/Components/ui/Image";
 import { skillsData, type Skill } from "@/data/skills";
 
 export default function SkillsMarquee() {
