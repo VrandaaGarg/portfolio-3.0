@@ -10,6 +10,7 @@ import Background from "@/Components/ui/Background";
 import Navbar from "@/Components/layout/navbar";
 import Footer from "@/Components/layout/footer";
 import ThemeProvider from "@/Components/layout/ThemeProvider";
+import CalProvider from "@/Components/layout/CalProvider";
 import { StructuredData } from "@/Components/seo/StructuredData";
 import Link from "@/Components/ui/Link";
 
@@ -77,6 +78,7 @@ function RootComponent() {
   return (
     <RootDocument>
       <ThemeProvider>
+        <CalProvider />
         <StructuredData />
         <Background />
         <div className="relative z-10 flex min-h-screen flex-col">

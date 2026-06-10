@@ -1,12 +1,14 @@
-import { RiTwitterXLine, RiMailLine } from "react-icons/ri";
+import { RiTwitterXLine } from "react-icons/ri";
 import { IconBrandLinkedin, IconBrandGithub } from "@tabler/icons-react";
+import { Mail } from "lucide-react";
 // import { SiPeerlist } from "react-icons/si";
 // import { FaInstagram } from "react-icons/fa";
 import type { IconType } from "react-icons";
+import type { LucideIcon } from "lucide-react";
 
 export interface SocialLink {
   title: string;
-  icon: IconType;
+  icon: IconType | LucideIcon;
   href: string;
 }
 
@@ -28,7 +30,7 @@ export const socialLinks: SocialLink[] = [
   },
   {
     title: "Email",
-    icon: RiMailLine,
+    icon: Mail,
     href: "mailto:hi@vrandagarg.in",
   },
   // {

@@ -6,7 +6,7 @@ import { socialLinks } from "@/data/social";
 import {
     Check,
     Play,
-    Mail,
+    CalendarClock,
     Loader2,
     AlertCircle,
     Code2,
@@ -28,12 +28,12 @@ import { Label } from "@/Components/ui/label";
 import { cn } from "@/lib/utils";
 import Magnetic from "@/Components/ui/Magnetic";
 import RotatingText from "@/Components/ui/RotatingText";
+import { calButtonConfig, calLink, calNamespace } from "@/lib/cal";
 
 export default function Contact() {
     const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");
     const [view, setView] = useState<"technical" | "non-technical">("technical");
-    const [activeFile, setActiveFile] = useState<"contact.tsx" | "socialLinks.tsx">("contact.tsx");
-    const email = import.meta.env.VITE_CONTACT_EMAIL ?? import.meta.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "";
+    const [activeFile, setActiveFile] = useState<"contact.tsx" | "socialLinks.tsx" | "meeting.tsx">("contact.tsx");
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -246,6 +246,18 @@ export default function Contact() {
                                                                 <FileCode className="w-3 h-3 text-yellow-400" />
                                                                 socialLinks.tsx
                                                             </div>
+                                                            <div
+                                                                onClick={() => setActiveFile("meeting.tsx")}
+                                                                onMouseDown={(e) => e.preventDefault()}
+                                                                className={cn(
+                                                                    "flex items-center gap-1 py-1 px-2 text-xs cursor-pointer rounded-sm transition-colors select-none",
+                                                                    activeFile === "meeting.tsx" ? "bg-card border border-neutral-200 text-foreground" : "text-neutral-700 hover:bg-card border border-transparent"
+                                                                )}
+                                                                tabIndex={-1}
+                                                            >
+                                                                <FileCode className="w-3 h-3 text-green-400" />
+                                                                meeting.tsx
+                                                            </div>
                                                             <div className="flex items-center gap-1 py-1 px-2 text-xs hover:bg-card cursor-pointer rounded-sm select-none">
                                                                 <FileCode className="w-3 h-3 text-blue-300" />
                                                                 globals.css
@@ -287,6 +299,21 @@ export default function Contact() {
                                                     >
                                                         <FileCode className="w-3 h-3 text-yellow-400" />
                                                         socialLinks.tsx
+                                                        <span className="ml-2 hover:bg-[#333] rounded-sm p-0.5">×</span>
+                                                    </div>
+                                                    <div
+                                                        onClick={() => setActiveFile("meeting.tsx")}
+                                                        onMouseDown={(e) => e.preventDefault()}
+                                                        className={cn(
+                                                            "flex items-center gap-2 px-3 py-2 border-t-2 text-xs cursor-pointer min-w-fit transition-colors select-none",
+                                                            activeFile === "meeting.tsx"
+                                                                ? "bg-card rounded-t-sm border-t-green-400 text-foreground"
+                                                                : "bg-neutral-100 border-t-transparent  text-[#969696] hover:bg-neutral-100"
+                                                        )}
+                                                        tabIndex={-1}
+                                                    >
+                                                        <FileCode className="w-3 h-3 text-green-400" />
+                                                        meeting.tsx
                                                         <span className="ml-2 hover:bg-[#333] rounded-sm p-0.5">×</span>
                                                     </div>
                                                 </div>
@@ -408,11 +435,11 @@ export default function Contact() {
                                                                         )}
                                                                     </button>
                                                                 </div>
-                                                            </form>
-                                                        )
-                                                    ) : (
-                                                        // Social Links Code View
-                                                        <div className="space-y-1.5 font-mono text-[13px] md:text-sm leading-relaxed">
+                                                             </form>
+                                                         )
+                                                     ) : activeFile === "socialLinks.tsx" ? (
+                                                         // Social Links Code View
+                                                         <div className="space-y-1.5 font-mono text-[13px] md:text-sm leading-relaxed">
                                                             <div className="flex group">
                                                                 <span className="text-[#495162] w-6  text-right mr-2 shrink-0 md:mr-4 select-none">1</span>
                                                                 <div className="flex flex-wrap">
@@ -459,6 +486,98 @@ export default function Contact() {
                                                             <div className="flex group">
                                                                 <span className="text-[#495162] w-6  text-right mr-2 shrink-0 md:mr-4 select-none">{(socialLinks.length * 4) + 2}</span>
                                                                 <span className="text-neutral-400">];</span>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        // Meeting Config Code View
+                                                        <div className="space-y-1.5 min-h-[400px] relative font-mono text-[13px] md:text-sm leading-relaxed">
+                                                            <div className="flex group">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">1</span>
+                                                                <div className="flex flex-wrap">
+                                                                    <span className="text-[#c678dd]">const</span>&nbsp;
+                                                                    <span className="text-[#e5c07b]">meeting</span>&nbsp;
+                                                                    <span className="text-neutral-400">=</span>&nbsp;
+                                                                    <span className="text-neutral-400">{`{`}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex group items-baseline">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">2</span>
+                                                                <div className="flex-1 flex flex-wrap items-center">
+                                                                    <span className="text-[#e06c75] ml-4">type</span>
+                                                                    <span className="text-neutral-400">:</span>&nbsp;
+                                                                    <span className="text-[#98c379]">&quot;Introduction Call&quot;</span>
+                                                                    <span className="text-neutral-400">,</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex group items-baseline">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">3</span>
+                                                                <div className="flex-1 flex flex-wrap items-center">
+                                                                    <span className="text-[#e06c75] ml-4">duration</span>
+                                                                    <span className="text-neutral-400">:</span>&nbsp;
+                                                                    <span className="text-[#d19a66]">30</span>
+                                                                    <span className="text-neutral-400">,</span>&nbsp;
+                                                                    <span className="text-[#5c6370] italic">{`// minutes`}</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex group items-baseline">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">4</span>
+                                                                <div className="flex-1 flex flex-wrap items-center">
+                                                                    <span className="text-[#e06c75] ml-4">platform</span>
+                                                                    <span className="text-neutral-400">:</span>&nbsp;
+                                                                    <span className="text-[#98c379]">&quot;Google Meet&quot;</span>
+                                                                    <span className="text-neutral-400">,</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex group items-baseline">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">5</span>
+                                                                <div className="flex-1 flex flex-wrap items-center">
+                                                                    <span className="text-[#e06c75] ml-4">topics</span>
+                                                                    <span className="text-neutral-400">:</span>&nbsp;
+                                                                    <span className="text-neutral-400">[</span>
+                                                                    <span className="text-[#98c379]">&quot;ideas&quot;</span>
+                                                                    <span className="text-neutral-400">,</span>&nbsp;
+                                                                    <span className="text-[#98c379]">&quot;projects&quot;</span>
+                                                                    <span className="text-neutral-400">,</span>&nbsp;
+                                                                    <span className="text-[#98c379]">&quot;collab&quot;</span>
+                                                                    <span className="text-neutral-400">],</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="flex group">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">6</span>
+                                                                <span className="text-neutral-400">{`};`}</span>
+                                                            </div>
+
+                                                            <div className="flex group">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">7</span>
+                                                                <span>&nbsp;</span>
+                                                            </div>
+
+                                                            <div className="flex group">
+                                                                <span className="text-[#495162] w-6 md:w-8 text-right mr-2 shrink-0 md:mr-4 select-none">8</span>
+                                                                <div className="flex flex-wrap">
+                                                                    <span className="text-[#61afef]">bookCall</span>
+                                                                    <span className="text-neutral-400">(</span>
+                                                                    <span className="text-[#e5c07b]">meeting</span>
+                                                                    <span className="text-neutral-400">);</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="mt-8 absolute bottom-4 right-4 flex justify-end">
+                                                                <button
+                                                                    type="button"
+                                                                    data-cal-link={calLink}
+                                                                    data-cal-namespace={calNamespace}
+                                                                    data-cal-config={calButtonConfig}
+                                                                    className="group flex items-center gap-2 px-4 py-2 rounded-md bg-neutral-800 hover:bg-neutral-950 cursor-pointer text-neutral-200 border border-neutral-700 text-xs font-mono transition-all"
+                                                                >
+                                                                    <CalendarClock className="w-3.5 h-3.5 text-green-400 group-hover:text-green-300" />
+                                                                    <span>Book Meeting</span>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     )}
@@ -594,13 +713,16 @@ export default function Contact() {
                             })}
 
                             <Magnetic>
-                                <a
-                                    href={`mailto:${email}`}
+                                <button
+                                    type="button"
+                                    data-cal-link={calLink}
+                                    data-cal-namespace={calNamespace}
+                                    data-cal-config={calButtonConfig}
                                     className="w-12 h-12 flex items-center justify-center rounded-full bg-card  border border-neutral-200  shadow-sm hover:shadow-md text-neutral-600 cursor-pointer hover:text-foreground  transition-all group"
-                                    aria-label="Email"
+                                    aria-label="Schedule a call"
                                 >
-                                    <Mail className="w-5 h-5 transition-transform group-hover:scale-110" />
-                                </a>
+                                    <CalendarClock className="w-5 h-5 transition-transform group-hover:scale-110" />
+                                </button>
                             </Magnetic>
                         </div>
 

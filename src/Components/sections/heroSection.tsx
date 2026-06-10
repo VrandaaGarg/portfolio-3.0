@@ -20,15 +20,24 @@ import SkillsMarquee from "../ui/SkillsMarquee";
 import Image from "@/Components/ui/Image";
 import Link from "@/Components/ui/Link";
 import { socialLinks, type SocialLink } from "@/data/social";
-import { Mail, Plus } from "lucide-react";
+import { CalendarClock, Plus } from "lucide-react";
 import { HiOutlineDocumentText } from "react-icons/hi2";
+import { calButtonConfig, calLink, calNamespace } from "@/lib/cal";
+
+const scheduleLink: SocialLink = {
+  title: "Schedule a call",
+  icon: CalendarClock,
+  href: "#",
+};
 
 function SocialIconWithTooltip({
   link,
   index,
+  cal = false,
 }: {
   link: SocialLink;
   index: number;
+  cal?: boolean;
 }) {
   const Icon = link.icon;
   const [isHovered, setIsHovered] = React.useState(false);
@@ -43,11 +52,16 @@ function SocialIconWithTooltip({
     springConfig
   );
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleMouseMove = (
+    event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>
+  ) => {
     const target = event.currentTarget;
     const halfWidth = target.offsetWidth / 2;
     x.set(event.nativeEvent.offsetX - halfWidth);
   };
+
+  const iconClassName =
+    "w-10 h-10 rounded-lg border border-neutral-300 bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-all duration-200 group cursor-pointer";
 
   return (
     <motion.div
@@ -62,16 +76,30 @@ function SocialIconWithTooltip({
       onMouseLeave={() => setIsHovered(false)}
     >
       <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.95 }}>
-        <Link
-          href={link.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-10 h-10 rounded-lg border border-neutral-300 bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center transition-all duration-200 group"
-          aria-label={link.title}
-          onMouseMove={handleMouseMove}
-        >
-          <Icon className="w-5 h-5 text-neutral-600 group-hover:text-foreground transition-colors duration-200" />
-        </Link>
+        {cal ? (
+          <button
+            type="button"
+            data-cal-link={calLink}
+            data-cal-namespace={calNamespace}
+            data-cal-config={calButtonConfig}
+            className={iconClassName}
+            aria-label={link.title}
+            onMouseMove={handleMouseMove}
+          >
+            <Icon className="w-5 h-5 text-neutral-600 group-hover:text-foreground transition-colors duration-200" />
+          </button>
+        ) : (
+          <Link
+            href={link.href}
+            target={link.href.startsWith("mailto:") ? undefined : "_blank"}
+            rel="noopener noreferrer"
+            className={iconClassName}
+            aria-label={link.title}
+            onMouseMove={handleMouseMove}
+          >
+            <Icon className="w-5 h-5 text-neutral-600 group-hover:text-foreground transition-colors duration-200" />
+          </Link>
+        )}
       </motion.div>
       <AnimatePresence mode="popLayout">
         {isHovered && (
@@ -294,17 +322,19 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
               className="flex flex-col  items-center sm:items-start gap-4"
             >
-              <div className="flex flex-nowrap justify-center gap-3 text-center">
-                <Link
-                  href="#contact"
-                  className="group w-full md:w-auto relative inline-flex h-8 md:h-12 items-center outline-1 outline-neutral-50 justify-center overflow-hidden rounded-lg border border-neutral-300 font-medium"
+              <div className="flex flex-wrap justify-center gap-3 text-center sm:justify-start">
+                <button
+                  type="button"
+                  data-cal-link={calLink}
+                  data-cal-namespace={calNamespace}
+                  data-cal-config={calButtonConfig}
+                  className="group w-full md:w-auto relative inline-flex h-8 md:h-12 cursor-pointer items-center outline-1 outline-neutral-50 justify-center overflow-hidden rounded-lg border border-neutral-300 font-medium"
                 >
-
                   <div className="inline-flex w-full md:w-auto text-sm md:text-base h-8 md:h-12 items-center justify-center bg-neutral-800 hover:bg-neutral-700 px-6 text-background">
-                    <Mail className="md:w-4 md:h-4 h-3 w-3 mr-2" />
-                    Contact
+                    <CalendarClock className="md:w-4 md:h-4 h-3 w-3 mr-2" />
+                    Schedule Call
                   </div>
-                </Link>
+                </button>
                 <Link
                   href="/VrandaGargResume.pdf"
                   target="_blank"
@@ -326,6 +356,11 @@ export default function HeroSection() {
                     index={index}
                   />
                 ))}
+                <SocialIconWithTooltip
+                  link={scheduleLink}
+                  index={socialLinks.length}
+                  cal
+                />
               </div>
             </motion.div>
           </motion.div>
